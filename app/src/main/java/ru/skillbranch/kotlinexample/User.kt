@@ -35,9 +35,9 @@ class User private constructor(
 
     private var _login: String? = null
 
-    var login: String?
+    var login: String
         set(value) {
-            _login = value?.toLowerCase()
+            _login = value.toLowerCase()
         }
         get() = _login!!
 
@@ -89,7 +89,7 @@ class User private constructor(
             fullName: $fullName
             initials: $initials
             email: $email
-            phone: $rawPhone
+            phone: $phone
             meta: $meta
         """.trimIndent()
     }
@@ -126,7 +126,7 @@ class User private constructor(
         return hexString.padStart(32, '0')
     }
 
-    companion object Facrory{
+    companion object Factory{
         fun makeUser(
             fullName: String,
             email: String? = null,
@@ -136,7 +136,7 @@ class User private constructor(
             val (firstName, lastName) = fullName.fullNameToPair()
 
             return when{
-                !phone.isNullOrBlank() -> User(firstName, lastName)
+                !phone.isNullOrBlank() -> User(firstName, lastName, rawPhone = phone)
                 !email.isNullOrBlank() && !password.isNullOrBlank() -> User(firstName, lastName, email, password)
                 else -> throw java.lang.IllegalArgumentException("Email or phone must be not null or blank")
             }
