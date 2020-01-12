@@ -46,10 +46,7 @@ object UserHolder {
     }
 
     fun requestAccessCode(login: String) {
-        //TODO implement function
-        map[login].also {
-
-        }
+        map[login]?.changeAccessCode()
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
