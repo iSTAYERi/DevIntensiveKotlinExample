@@ -3,6 +3,7 @@ package ru.skillbranch.kotlinexample
 import org.junit.After
 import org.junit.Assert
 import org.junit.Test
+import ru.skillbranch.kotlinexample.extensions.dropLastUntil
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -174,5 +175,18 @@ class ExampleUnitTest {
 
         Assert.assertNotEquals(oldAccess, user.accessCode!!)
         Assert.assertEquals(expectedInfo, successResult)
+    }
+
+    @Test
+    fun drop_last_until_extension() {
+        val data = listOf(1, 2, 3, 4)
+        val expectedData = listOf(1, 2)
+        val data2 = "Hello my friend".split(" ")
+        val expectedData2 = listOf("Hello")
+        val data3 = listOf(1, 2, 3, 4)
+        val expectedData3 = emptyList<Int>()
+        Assert.assertEquals(expectedData, data.dropLastUntil { it == 3 })
+        Assert.assertEquals(expectedData2, data2.dropLastUntil { it == "my" })
+        Assert.assertEquals(expectedData3, data3.dropLastUntil { it == 1 })
     }
 }
