@@ -189,4 +189,24 @@ class ExampleUnitTest {
         Assert.assertEquals(expectedData2, data2.dropLastUntil { it == "my" })
         Assert.assertEquals(expectedData3, data3.dropLastUntil { it == 1 })
     }
+
+    @Test
+    fun import_csv() {
+        val data = " John Doe ;JohnDoe@unknow.com;[B@7591083d:c6adb4becdc64e92857e1e2a0fd6af84;;"
+        val expectedData = """
+            firstName: John
+            lastName: Doe
+            login: johndoe@unknow.com
+            fullName: John Doe
+            initials: J D
+            email: JohnDoe@unknow.com
+            phone: null
+            meta: {src=csv}
+        """.trimIndent()
+        val user = UserHolder.importUsers(listOf(data))[0]
+        Assert.assertEquals(
+            expectedData,
+            UserHolder.loginUser(user.login, user.accessCode!!)
+        )
+    }
 }

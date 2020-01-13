@@ -49,6 +49,13 @@ object UserHolder {
         map[login]?.changeAccessCode()
     }
 
+    fun importUsers(list: List<String>): List<User> {
+        val users = list.map { User.parseFromCsv(it) }
+        map.putAll(users.map { it.login to it }.toMap())
+        println("list of users: ${map}")
+        return users
+    }
+
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     fun clearHolder(){
         map.clear()

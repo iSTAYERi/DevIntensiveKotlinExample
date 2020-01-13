@@ -13,7 +13,7 @@ class User private constructor(
     private val lastName: String?,
     email: String? = null,
     rawPhone: String? = null,
-    meta: Map<String, Any>? = null
+    var meta: Map<String, Any>? = null
 ) {
 
     val userInfo: String
@@ -41,9 +41,7 @@ class User private constructor(
         }
         get() = _login!!
 
-    private val salt: String by lazy {
-        ByteArray(16).also { SecureRandom().nextBytes(it) }.toString()
-    }
+    private var salt: String = ByteArray(16).also { SecureRandom().nextBytes(it) }.toString()
     private lateinit var passwordHash: String
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
@@ -71,6 +69,21 @@ class User private constructor(
         passwordHash = encrypt(code)
         accessCode = code
         sendAccessCodeToUser(phone!!, code)
+    }
+
+    // for csv
+    constructor(
+        firstName: String,
+        lastName: String?,
+        email: String?,
+        salt: String,
+        passwordHash: String
+    ): this(firstName, lastName, email = email, meta = mapOf("src" to "csv")) {
+        println("Secondary csv constructor")
+        this.salt = salt
+        this.passwordHash = passwordHash
+        val code = generateAccessCode()
+        this.accessCode = code
     }
 
     init {
@@ -138,15 +151,48 @@ class User private constructor(
             fullName: String,
             email: String? = null,
             password: String? = null,
-            phone: String? = null
+            phone: String? = null,
+            salt: String? = null,
+            passwordHash: String? = null
         ): User{
             val (firstName, lastName) = fullName.fullNameToPair()
 
             return when{
                 !phone.isNullOrBlank() -> User(firstName, lastName, rawPhone = phone)
                 !email.isNullOrBlank() && !password.isNullOrBlank() -> User(firstName, lastName, email, password)
+                !email.isNullOrBlank() &&
+                        !salt.isNullOrBlank() &&
+                        !passwordHash.isNullOrBlank() -> User(firstName, lastName, email, salt, passwordHash)
                 else -> throw java.lang.IllegalArgumentException("Email or phone must be not null or blank")
             }
+        }
+
+        /**
+         * Parse User from csv string.
+         *
+         * String structure: full name; email; salt:hash; phone
+         */
+        fun parseFromCsv(data: String): User {
+            data.split(";").also {
+                val fullName = it[0].trim()
+                val email = it[1].trim()
+                val (salt, hash) = it[2].trim().split(":", limit = 2)
+                val phone = it[3]
+
+                return makeUser(
+                    fullName,
+                    email,
+                    phone = phone,
+                    salt = salt,
+                    passwordHash = hash
+                ).apply {
+                    meta = mapOf("src" to "csv")
+                    this.salt = salt
+                    passwordHash = hash
+                    println(userInfo)
+                }
+            }
+
         }
 
         private fun String.fullNameToPair(): Pair<String, String?> {
