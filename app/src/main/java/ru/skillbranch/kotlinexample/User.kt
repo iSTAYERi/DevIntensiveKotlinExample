@@ -188,9 +188,9 @@ class User private constructor(
                     email,
                     phone = phone,
                     salt = salt,
-                    passwordHash = hash
-                ).apply {
+                    passwordHash = hash,
                     meta = mapOf("src" to "csv")
+                ).apply {
                     this.salt = salt
                     passwordHash = hash
                     println(userInfo)
