@@ -52,8 +52,10 @@ class User private constructor(
         firstName: String,
         lastName: String?,
         email: String?,
-        password: String
-    ): this(firstName, lastName, email = email, meta = mapOf("auth" to "password")) {
+        password: String,
+        metat: Map<String, Any>? = null,
+        tatat: String? = null
+    ): this(firstName, lastName, email,meta = metat ?: mapOf("auth" to "password")) {
         println("Secondary mail constructor")
         passwordHash = encrypt(password)
     }
@@ -62,8 +64,9 @@ class User private constructor(
     constructor(
         firstName: String,
         lastName: String?,
-        rawPhone: String?
-    ): this(firstName, lastName, rawPhone = rawPhone, meta = mapOf("auth" to "sms")) {
+        rawPhone: String?,
+        metat: Map<String, Any>? = null
+    ): this(firstName, lastName, rawPhone = rawPhone, meta = metat ?: mapOf("auth" to "sms")) {
         println("Secondary phone constructor")
         val code = generateAccessCode()
         passwordHash = encrypt(code)
@@ -153,13 +156,14 @@ class User private constructor(
             password: String? = null,
             phone: String? = null,
             salt: String? = null,
-            passwordHash: String? = null
+            passwordHash: String? = null,
+            meta: Map<String, Any>? = null
         ): User{
             val (firstName, lastName) = fullName.fullNameToPair()
 
             return when{
-                !phone.isNullOrBlank() -> User(firstName, lastName, rawPhone = phone)
-                !email.isNullOrBlank() && !password.isNullOrBlank() -> User(firstName, lastName, email, password)
+                !phone.isNullOrBlank() -> User(firstName, lastName, rawPhone = phone, metat = meta)
+                !email.isNullOrBlank() && !password.isNullOrBlank() -> User(firstName, lastName, email, password, metat = meta)
                 !email.isNullOrBlank() &&
                         !salt.isNullOrBlank() &&
                         !passwordHash.isNullOrBlank() -> User(firstName, lastName, email, salt, passwordHash)

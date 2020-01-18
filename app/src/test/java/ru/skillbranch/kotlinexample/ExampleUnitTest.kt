@@ -179,14 +179,14 @@ class ExampleUnitTest {
 
     @Test
     fun drop_last_until_extension() {
-        val data = listOf(1, 2, 3, 4)
-        val expectedData = listOf(1, 2)
-        val data2 = "Hello my friend".split(" ")
-        val expectedData2 = listOf("Hello")
+        val data = listOf(1, 2, 3)
+        val expectedData = listOf(1)
+        val data2 = "House Nymeros Martell of Sunspear".split(" ")
+        val expectedData2 = listOf("House", "Nymeros", "Martell")
         val data3 = listOf(1, 2, 3, 4)
         val expectedData3 = emptyList<Int>()
-        Assert.assertEquals(expectedData, data.dropLastUntil { it == 3 })
-        Assert.assertEquals(expectedData2, data2.dropLastUntil { it == "my" })
+        Assert.assertEquals(expectedData, data.dropLastUntil { it == 2 })
+        Assert.assertEquals(expectedData2, data2.dropLastUntil { it == "of" })
         Assert.assertEquals(expectedData3, data3.dropLastUntil { it == 1 })
     }
 
